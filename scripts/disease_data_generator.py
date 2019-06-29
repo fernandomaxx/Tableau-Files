@@ -1,59 +1,51 @@
-filename = input()
-mfilename = input()
-dfilename = input()
-out_filename = input()
-f_size = int(input())
-features = [[] for _ in range(f_size)]
-f_file = open(filename)
-m_file = open(mfilename)
-d_file = open(dfilename)
-out_file = open(out_filename, "w")
-features_name = []
+file_list = []
+class_list = []
+m_list = []
+disease_list = []
 f_pointer = []
-disease_name = []
-m_names = []
-count = 0
+path_config = "configs/" + input() + ".txt"
+out_file = open("out/"input(), "w")
+config = open(path_config)
+out_file.write(config.readline())
+path_files = config.readlines()
 
-for line in m_file:
-    m_names.append(line.replace("\n", ""))
+for path in path_files:
+    file_list.append(open(path.replace("\n", "")))
 
-m_size = len(m_names)
+for line in file_list[0]:
+    m_list.append(line.replace("\n", ""))
 
-disease_name = d_file.readlines()
+for line in file_list[1]:
+    disease_list.append(line.replace("\n", ""))
 
-'''
-while True:
-    name = input()
-    if name == "exit":
-       break
-    else:
-        disease_name.append(name)
-'''
-
-for i in range(0, f_size):
-    features_name.append(input())
+for line in file_list[2]:
+    class_list.append(line.replace("\n", ""))
     f_pointer.append(0)
 
-for line in f_file.readlines():
-    line = line.replace("\n", "")
-    values = line.split("\t")
-    for i in range(0, f_size):
-        features[i].append(values[i])
+class_size = len(class_list)
+m_size = len(m_list)
+path = path_files[1].replace("paths.txt\n", "")
+class_values = [[] for _ in range(class_size)]
+
+for i in disease_list:
+    for line in open(path + i + ".txt").readlines() :
+        line = line.replace("\n", "")
+        values = line.split("\t")
+        for i in range(0, class_size):
+            class_values[i].append(values[i])
 
 d_count = 0
-for i in range(0, int(len(features[0])/m_size) * f_size):
-    f_count = i%f_size
+count = 0
+for i in range(0, int(len(class_values[0])/m_size) * class_size):
+    f_count = i%class_size
     for j in range(0, m_size):
-        line = str(count) + ";" + m_names[j] + ";" + features_name[f_count] + ";" + features[f_count][f_pointer[f_count]] + ";" + disease_name[d_count]
-        print(line)
+        line = str(count) + ";" + m_list[j] + ";" + class_list[f_count] + ";" + class_values[f_count][f_pointer[f_count]] + ";" + disease_list[d_count] + "\n"
         out_file.write(line)
         f_pointer[f_count] += 1
         count += 1
-    if f_count == f_size - 1:
+    if f_count == class_size - 1:
         d_count += 1
-        
-f_file.close()
-m_file.close()
+
 out_file.close()
                
 
